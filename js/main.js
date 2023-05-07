@@ -4,9 +4,10 @@ import { randomHexColor } from "./util"
 import Background from "./background"
 const ctx = canvas.getContext('2d')
 
-
 // 屏幕的宽带
 const screenWidth = window.innerWidth
+// 屏幕的高度
+const screenHeight = window.innerHeight
 // 大圆的半径
 const R = 100
 // 小圆的半径
@@ -15,16 +16,24 @@ const r = 10
 const slowSpeed = Math.PI / 180
 // 速度，全部插入完成后的速度
 const faseSpeed = 3 * slowSpeed
+// 每关初始的上面的小球数量
+let initLollipop = 6
 // 上面小球的数量
-const lollipopCount = 6
+let lollipopCount = initLollipop
+// 每关初始的小球数量
+let initShoot = 6
 // 下面小球的数量
-const shootCount = 6
+let shootCount = initShoot
 // 下方小球发射区距离圆心的位置
 const offsetY = 300
 // 判断是否结束游戏
 let isGameOver = false
 // 默认为慢速旋转
 let speed = slowSpeed
+// 背景图片路径
+const BG_IMG_SRC = 'js/images/bg.jpg'
+// 失败提示图片路径
+const PROMPT_IMG_SRC = 'js/images/prompt.jpg'
 
 /**
  * 游戏主函数
@@ -57,7 +66,7 @@ export default class Main {
       this.shootArray.push(shoot)
     }
 
-    this.bg = new Background()
+    this.bg = new Background(BG_IMG_SRC, 0, 0, screenWidth, screenHeight)
   }
 
   beginGame() {
@@ -76,6 +85,33 @@ export default class Main {
   }
 
   touchHandler(e) {
+    // 通过点击位置判断是否点击的为重新开始
+    const touche = e.changedTouches[0]
+    const minX = 115
+    const minY = 270
+    const maxX = 255
+    const maxY = 310
+    if(touche.pageX < maxX && minX < touche.pageX && touche.pageY < maxY && minY < touche.pageY && isGameOver) {
+      // 恢复为初始状态
+      isGameOver = false
+      speed = slowSpeed
+      lollipopCount = initLollipop
+      shootCount = initShoot
+      this.init()
+      return
+    }
+
+    // 判断是否发射完小球
+    if(!this.shootArray.length && !isGameOver) {
+      initLollipop += 1
+      initShoot += 2
+      lollipopCount += 1
+      shootCount += 2
+      speed = slowSpeed
+      this.init()
+      return
+    }
+
     // 如果失败，停止发射小球
     if (isGameOver) {
       return
@@ -189,11 +225,22 @@ export default class Main {
     // 是 Canvas 2D API 通过在绘图状态栈中弹出顶端的状态，将 canvas 恢复到最近的保存状态的方法。如果没有保存状态，此方法不做任何改变
     ctx.restore()
 
-    // 失败后弹出文字
+    // 失败后弹出提示
     if (isGameOver) {
+      this.promptBg = new Background(PROMPT_IMG_SRC, 30, 200, 315, 210)
+      this.promptBg.render(ctx)
       ctx.font = "30px Georgia"
       ctx.fillStyle = "red"
-      ctx.fillText("Game Over", 10, 50)
+      ctx.fillText("重新开始", 127.5, 305)
+    }
+
+    // 下一关
+    if(this.shootArray.length === 0) {
+      this.nextBg = new Background(PROMPT_IMG_SRC, 30, 200, 315, 210)
+      this.nextBg.render(ctx)
+      ctx.font = "30px Georgia"
+      ctx.fillStyle = "red"
+      ctx.fillText("下一关", 127.5, 305)
     }
   }
 }

@@ -1,17 +1,14 @@
-// 图片路径
-const IMG_SRC = 'js/images/bg.jpg'
-// 屏幕的宽带
-const screenWidth = window.innerWidth
-// 屏幕的高度
-const screenHeight = window.innerHeight
-
 export default class background {
-  constructor() {
+  constructor(IMG_SRC, initWidth, initHight, screenWidth, screenHeight) {
     this.img = wx.createImage()
     this.img.src = IMG_SRC
+    this.initWidth = initWidth
+    this.initHight = initHight
+    this.screenWidth = screenWidth
+    this.screenHeight = screenHeight
   }
   
   render(ctx) {
-    ctx.drawImage(this.img, 0, 0, screenWidth, screenHeight)
+    ctx.drawImage(this.img, this.initWidth, this.initHight, this.screenWidth, this.screenHeight)
   }
 }
