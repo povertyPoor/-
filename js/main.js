@@ -8,6 +8,10 @@ const ctx = canvas.getContext('2d')
 const screenWidth = window.innerWidth
 // 屏幕的高度
 const screenHeight = window.innerHeight
+// 提示框的宽度
+const promptBgWidth = 315
+// 提示框的高度
+const promptBgHeight = 210
 // 大圆的半径
 const R = 100
 // 小圆的半径
@@ -88,9 +92,9 @@ export default class Main {
     // 通过点击位置判断是否点击的为重新开始
     const touche = e.changedTouches[0]
     const minX = 115
-    const minY = 270
+    const minY = 310
     const maxX = 255
-    const maxY = 310
+    const maxY = 340
     if(touche.pageX < maxX && minX < touche.pageX && touche.pageY < maxY && minY < touche.pageY && isGameOver) {
       // 恢复为初始状态
       isGameOver = false
@@ -194,6 +198,7 @@ export default class Main {
     // 是 Canvas 2D API 描述画笔（绘制图形）颜色或者样式的属性。默认值是 #000 (black)
     ctx.strokeStyle = "black"
 
+    //  绘制背景
     this.bg.render(ctx)
 
     // 是 Canvas 2D API 通过将当前状态放入栈中，保存 canvas 全部状态的方法
@@ -220,27 +225,27 @@ export default class Main {
     // 大圆中的小球数量
     ctx.font = "30px Georgia"
     ctx.fillStyle = "#fff"
-    ctx.fillText(this.shootArray.length, -8, 8)
+    ctx.fillText(this.shootArray.length, -7.5, 7.5)
 
     // 是 Canvas 2D API 通过在绘图状态栈中弹出顶端的状态，将 canvas 恢复到最近的保存状态的方法。如果没有保存状态，此方法不做任何改变
     ctx.restore()
 
     // 失败后弹出提示
     if (isGameOver) {
-      this.promptBg = new Background(PROMPT_IMG_SRC, 30, 200, 315, 210)
+      this.promptBg = new Background(PROMPT_IMG_SRC, (screenWidth / 2) - (promptBgWidth / 2), (screenHeight / 2) - (promptBgHeight / 2), promptBgWidth, promptBgHeight)
       this.promptBg.render(ctx)
       ctx.font = "30px Georgia"
       ctx.fillStyle = "red"
-      ctx.fillText("重新开始", 127.5, 305)
+      ctx.fillText("重新开始", (screenWidth / 2) - 60, (screenHeight / 2))
     }
 
     // 下一关
     if(this.shootArray.length === 0) {
-      this.nextBg = new Background(PROMPT_IMG_SRC, 30, 200, 315, 210)
-      this.nextBg.render(ctx)
+      this.promptBg = new Background(PROMPT_IMG_SRC, (screenWidth / 2) - (promptBgWidth / 2), (screenHeight / 2) - (promptBgHeight / 2), promptBgWidth, promptBgHeight)
+      this.promptBg.render(ctx)
       ctx.font = "30px Georgia"
       ctx.fillStyle = "red"
-      ctx.fillText("下一关", 127.5, 305)
+      ctx.fillText("下一关", (screenWidth / 2) - 60, (screenHeight / 2))
     }
   }
 }
